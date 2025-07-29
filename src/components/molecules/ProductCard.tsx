@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     margin: 8,
-    borderRadius: 6, // daha keskin köşe
+    borderRadius: 6, 
     padding: 12,
     elevation: 3,
   },
@@ -59,8 +59,8 @@ const styles = StyleSheet.create({
   },
   image: {
     width: 150,
-    height: 190, // daha büyük resim
-    borderRadius: 6, // daha keskin köşe
+    height: 190, 
+    borderRadius: 6, 
   },
   heartIcon: {
     position: 'absolute',
@@ -74,9 +74,9 @@ const styles = StyleSheet.create({
     bottom: 5,
     alignSelf: 'center',
     backgroundColor: '#fff',
-    paddingHorizontal: 20, // sağ sol boşluk
+    paddingHorizontal: 20, 
     paddingVertical: 6,
-    borderRadius: 10, // daha keskin (önceki 20+ idi)
+    borderRadius: 10, 
     elevation: 4,
     zIndex: 3,
   },
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   title: {
-    marginTop: 32, // fiyat etiketi çarpışmasın
+    marginTop: 32, 
     fontWeight: 'bold',
     fontSize: 16,
     color: '#000',
