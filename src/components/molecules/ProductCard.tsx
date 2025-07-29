@@ -41,9 +41,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ title, price, image }) => {
     </View>
   );
 };
-
+ 
 export default ProductCard;
-
+ 
 const styles = StyleSheet.create({
   card: {
     flex: 1,
