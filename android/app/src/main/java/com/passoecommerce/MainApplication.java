@@ -9,6 +9,7 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.soloader.SoLoader;
 import java.util.List;
+import android.os.Bundle;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -43,6 +44,8 @@ public class MainApplication extends Application implements ReactApplication {
           return BuildConfig.IS_HERMES_ENABLED;
         }
       };
+      
+  
 
   @Override
   public ReactNativeHost getReactNativeHost() {
