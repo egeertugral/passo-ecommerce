@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   Modal,
   Pressable,
-  Alert,
 } from 'react-native';
 import ProductCard from '../../components/molecules/ProductCard';
 import BedRoomImage from '../../assets/odagorsel.jpg';
@@ -28,10 +27,11 @@ const HomePage = () => {
   const [maxPrice, setMaxPrice] = useState('');
   const [isFilterActive, setIsFilterActive] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState(products);
+  const [showError, setShowError] = useState(false);
 
   const handleFilter = () => {
     if (!minPrice && !maxPrice) {
-      Alert.alert('Uyarı', 'En az bir filtreleme değeri girmelisiniz.');
+      setShowError(true);
       return;
     }
 
@@ -44,6 +44,7 @@ const HomePage = () => {
 
     setFilteredProducts(filtered);
     setIsFilterActive(true);
+    setShowError(false);
     setFilterModalVisible(false);
   };
 
@@ -52,24 +53,23 @@ const HomePage = () => {
     setMaxPrice('');
     setFilteredProducts(products);
     setIsFilterActive(false);
+    setShowError(false);
     setFilterModalVisible(false);
   };
 
   return (
     <View style={styles.container}>
-     
       <View style={styles.divider} />
 
-     
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => console.log('Favoriler')}>
+        <TouchableOpacity>
           <Text style={styles.icon}>❤️</Text>
         </TouchableOpacity>
 
         <Text style={styles.title}>Passo E-Commerce</Text>
 
         {cartItemCount > 0 ? (
-          <TouchableOpacity onPress={() => console.log('Sepet')}>
+          <TouchableOpacity>
             <View style={styles.cartWrapper}>
               <Text style={styles.icon}>🛒</Text>
               <View style={styles.badge}>
@@ -82,10 +82,8 @@ const HomePage = () => {
         )}
       </View>
 
-      
       <View style={styles.divider} />
 
-      
       <View style={styles.searchWrapper}>
         <TextInput
           style={styles.searchInput}
@@ -105,24 +103,28 @@ const HomePage = () => {
         </TouchableOpacity>
       </View>
 
-      
       <FlatList
-        data={filteredProducts}
-        renderItem={({ item }) => (
-          <ProductCard
-            title={item.title}
-            price={item.price}
-            image={item.image}
-          />
-        )}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-        columnWrapperStyle={{ justifyContent: 'space-between' }}
-        contentContainerStyle={{ paddingTop: 8, paddingBottom: 16 }}
-        showsVerticalScrollIndicator={false}
+  data={filteredProducts}
+  renderItem={({ item }) => (
+    <View style={styles.cardWrapper}>
+      <ProductCard
+        title={item.title}
+        price={item.price}
+        image={item.image}
       />
+    </View>
+  )}
+  keyExtractor={(item) => item.id}
+  numColumns={2}
+  contentContainerStyle={{ paddingTop: 8, paddingBottom: 16 }}
+  columnWrapperStyle={
+    filteredProducts.length === 1
+      ? { justifyContent: 'center' }
+      : { justifyContent: 'space-between' }
+  }
+  showsVerticalScrollIndicator={false}
+/>
 
-      {/* Modal */}
       <Modal
         visible={filterModalVisible}
         animationType="slide"
@@ -135,31 +137,35 @@ const HomePage = () => {
 
             <TextInput
               style={styles.modalInput}
-              placeholder="Minimum Fiyat"
+              placeholder="En Düşük Fiyat"
               keyboardType="numeric"
               value={minPrice}
               onChangeText={setMinPrice}
             />
             <TextInput
               style={styles.modalInput}
-              placeholder="Maksimum Fiyat"
+              placeholder="En Yüksek Fiyat"
               keyboardType="numeric"
               value={maxPrice}
               onChangeText={setMaxPrice}
             />
 
+            {showError && (
+              <Text style={styles.errorText}>❗ En Az Bir Filtreleme Yapmalısınız</Text>
+            )}
+
             <View style={styles.modalButtons}>
               {isFilterActive ? (
-                <Pressable
-                  style={styles.cancelButton}
-                  onPress={handleClearFilter}
-                >
+                <Pressable style={styles.cancelButton} onPress={handleClearFilter}>
                   <Text style={styles.cancelButtonText}>Temizle</Text>
                 </Pressable>
               ) : (
                 <Pressable
                   style={styles.cancelButton}
-                  onPress={() => setFilterModalVisible(false)}
+                  onPress={() => {
+                    setFilterModalVisible(false);
+                    setShowError(false);
+                  }}
                 >
                   <Text style={styles.cancelButtonText}>Vazgeç</Text>
                 </Pressable>
@@ -285,6 +291,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontSize: 16,
   },
+  errorText: {
+    color: 'red',
+    fontSize: 13,
+    marginBottom: 12,
+    marginLeft: 6,
+  },
   modalButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -317,5 +329,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
+  cardWrapper: {
+  width: '48%', 
+  marginBottom: 12,
+},
 });
+
 export default HomePage;
