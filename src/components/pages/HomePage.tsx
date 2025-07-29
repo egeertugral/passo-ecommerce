@@ -57,10 +57,10 @@ const HomePage = () => {
 
   return (
     <View style={styles.container}>
-      {/* Üst divider */}
+     
       <View style={styles.divider} />
 
-      {/* Header */}
+     
       <View style={styles.header}>
         <TouchableOpacity onPress={() => console.log('Favoriler')}>
           <Text style={styles.icon}>❤️</Text>
@@ -82,10 +82,10 @@ const HomePage = () => {
         )}
       </View>
 
-      {/* Alt divider */}
+      
       <View style={styles.divider} />
 
-      {/* Arama + filtre */}
+      
       <View style={styles.searchWrapper}>
         <TextInput
           style={styles.searchInput}
@@ -105,7 +105,7 @@ const HomePage = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Ürün grid */}
+      
       <FlatList
         data={filteredProducts}
         renderItem={({ item }) => (
