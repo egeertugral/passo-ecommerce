@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -9,54 +9,46 @@ import {
   Modal,
   Pressable,
 } from 'react-native';
-import ProductCard from '../../components/molecules/ProductCard';
-import BedRoomImage from '../../assets/odagorsel.jpg';
+import {BottomSheet} from '../organisms/BottomSheet/BottomSheet';
+import {SearchBar} from '../molecules/searchBar/searchBar';
+import { LinkButton } from '../molecules/linkButton/linkButton';
+import useProductService from '../../apı/ProductService';
+import ProductCard from '../organisms/ProductCard/ProductCard';
+import type { Product } from '../../apı/models/Products';
 
-const products = [
-  { id: '1', title: 'Bed Room', price: '19.00', image: BedRoomImage },
-  { id: '2', title: 'Child Room', price: '29.00', image: BedRoomImage },
-  { id: '3', title: 'Play Room', price: '39.00', image: BedRoomImage },
-  { id: '4', title: 'Music Room', price: '49.00', image: BedRoomImage },
-];
-
-const cartItemCount = 2;
 
 const HomePage = () => {
-  const [filterModalVisible, setFilterModalVisible] = useState(false);
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
-  const [isFilterActive, setIsFilterActive] = useState(false);
-  const [filteredProducts, setFilteredProducts] = useState(products);
-  const [showError, setShowError] = useState(false);
+const [visible, setVisible] = useState(false);
+const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+const [isSearching, setIsSearching] = useState(false);
+const {  products,getProducts } = useProductService();
 
-  const handleFilter = () => {
-    if (!minPrice && !maxPrice) {
-      setShowError(true);
-      return;
-    }
 
-    const filtered = products.filter((product) => {
-      const price = parseFloat(product.price);
-      const min = minPrice ? parseFloat(minPrice) : 0;
-      const max = maxPrice ? parseFloat(maxPrice) : Infinity;
-      return price >= min && price <= max;
-    });
+
+  useEffect(() => {
+   
+  if (products) {
+    setFilteredProducts(products);
+  }
+  getProducts();
+}, [products]);
+
+
+ const handleFilterApply = (min: number | null, max: number | null) => {
+ const filtered = products?.filter((product) => {
+      const price = product.price;
+      if (min !== null && max !== null) {
+        return price >= min && price <= max;
+      } else if (min !== null) {
+        return price >= min;
+      } else if (max !== null) {
+        return price <= max;
+      }
+      return true;
+    }) || []; // products undifined dönerse boş liste atasın diye yaptım 
 
     setFilteredProducts(filtered);
-    setIsFilterActive(true);
-    setShowError(false);
-    setFilterModalVisible(false);
   };
-
-  const handleClearFilter = () => {
-    setMinPrice('');
-    setMaxPrice('');
-    setFilteredProducts(products);
-    setIsFilterActive(false);
-    setShowError(false);
-    setFilterModalVisible(false);
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.divider} />
@@ -67,117 +59,44 @@ const HomePage = () => {
         </TouchableOpacity>
 
         <Text style={styles.title}>Passo E-Commerce</Text>
-
-        {cartItemCount > 0 ? (
-          <TouchableOpacity>
-            <View style={styles.cartWrapper}>
-              <Text style={styles.icon}>🛒</Text>
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>{cartItemCount}</Text>
-              </View>
+        <TouchableOpacity>
+          <View style={styles.cartWrapper}>
+            <Text style={styles.icon}>🛒</Text>
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>1</Text>
             </View>
-          </TouchableOpacity>
-        ) : (
-          <View style={{ width: 24 }} />
-        )}
+          </View>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.divider} />
 
-      <View style={styles.searchWrapper}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Ara..."
-          placeholderTextColor="#999"
-        />
-        <TouchableOpacity
-          onPress={() => setFilterModalVisible(true)}
-          style={styles.filterIconWrapper}
-        >
-          <Text style={styles.filterIcon}>⚙️</Text>
-          {isFilterActive && (
-            <View style={styles.filterBadge}>
-              <Text style={styles.filterBadgeText}>•</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      </View>
-
-      <FlatList
-  data={filteredProducts}
+      
+<SearchBar
+  onPress={() => setVisible(true)}
+  isFilterActive={filteredProducts.length !== products?.length}
+/>
+     
+      {<FlatList
+  data={filteredProducts.length > 0 || isSearching ? filteredProducts : products}
+  keyExtractor={(item) => item.id.toString()}
+  numColumns={2}
   renderItem={({ item }) => (
-    <View style={styles.cardWrapper}>
+    <View style= {{ flex:1, margin: 6}}>
       <ProductCard
         title={item.title}
-        price={item.price}
-        image={item.image}
+        price={item.price.toString()}
+        image={item.images[0] }
       />
     </View>
   )}
-  keyExtractor={(item) => item.id}
-  numColumns={2}
-  contentContainerStyle={{ paddingTop: 8, paddingBottom: 16 }}
-  columnWrapperStyle={
-    filteredProducts.length === 1
-      ? { justifyContent: 'center' }
-      : { justifyContent: 'space-between' }
-  }
+  contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 4 }}
+  columnWrapperStyle={{ justifyContent: 'space-between' }}
   showsVerticalScrollIndicator={false}
-/>
-
-      <Modal
-        visible={filterModalVisible}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setFilterModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Filtrele</Text>
-
-            <TextInput
-              style={styles.modalInput}
-              placeholder="En Düşük Fiyat"
-              keyboardType="numeric"
-              value={minPrice}
-              onChangeText={setMinPrice}
-            />
-            <TextInput
-              style={styles.modalInput}
-              placeholder="En Yüksek Fiyat"
-              keyboardType="numeric"
-              value={maxPrice}
-              onChangeText={setMaxPrice}
-            />
-
-            {showError && (
-              <Text style={styles.errorText}>❗ En Az Bir Filtreleme Yapmalısınız</Text>
-            )}
-
-            <View style={styles.modalButtons}>
-              {isFilterActive ? (
-                <Pressable style={styles.cancelButton} onPress={handleClearFilter}>
-                  <Text style={styles.cancelButtonText}>Temizle</Text>
-                </Pressable>
-              ) : (
-                <Pressable
-                  style={styles.cancelButton}
-                  onPress={() => {
-                    setFilterModalVisible(false);
-                    setShowError(false);
-                  }}
-                >
-                  <Text style={styles.cancelButtonText}>Vazgeç</Text>
-                </Pressable>
-              )}
-
-              <Pressable style={styles.filterButton} onPress={handleFilter}>
-                <Text style={styles.filterButtonText}>Filtrele</Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
+/> }
+      <BottomSheet visibility={visible} title="Filtrele" 
+      onClose={() => setVisible(false)}
+      onFilterApply={handleFilterApply} />
     </View>
   );
 };
@@ -210,7 +129,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cartWrapper: {
-    position: 'relative',
+    flex: 1,
+  marginBottom: 16,
+  marginHorizontal: 4,
   },
   badge: {
     position: 'absolute',
@@ -241,7 +162,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 10,
     top: '50%',
-    transform: [{ translateY: -12 }],
+    transform: [{translateY: -12}],
   },
   filterIcon: {
     fontSize: 18,
@@ -330,9 +251,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   cardWrapper: {
-  width: '48%', 
-  marginBottom: 12,
-},
+    width: '48%',
+    marginBottom: 12,
+  },
 });
 
 export default HomePage;
