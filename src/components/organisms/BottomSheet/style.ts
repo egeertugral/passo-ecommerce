@@ -1,14 +1,13 @@
-import { StyleSheet } from "react-native";
+import {StyleSheet} from 'react-native';
 
-export const  BottomSheetStyle = StyleSheet.create({
-
-    errorText: {
+export const BottomSheetStyle = StyleSheet.create({
+  errorText: {
     color: 'red',
     fontSize: 13,
     marginBottom: 12,
     marginLeft: 6,
   },
-    modalInput: {
+  modalInput: {
     borderWidth: 1,
     borderColor: 'red',
     borderRadius: 10,
@@ -23,7 +22,7 @@ export const  BottomSheetStyle = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 24,
   },
-   modalContent: {
+  modalContent: {
     backgroundColor: '#fff',
     paddingHorizontal: 24,
     paddingTop: 24,
@@ -68,4 +67,4 @@ export const  BottomSheetStyle = StyleSheet.create({
     marginTop: 10,
     gap: 12,
   },
-})
+});

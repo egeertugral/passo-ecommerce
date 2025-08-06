@@ -1,19 +1,18 @@
-import { StyleSheet } from "react-native";
+import {StyleSheet} from 'react-native';
 
 export const styles = StyleSheet.create({
-
-    searchWrapper: {
+  searchWrapper: {
     position: 'relative',
     marginTop: 16,
   },
- searchInput: {
+  searchInput: {
     padding: 10,
     paddingRight: 40,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
   },
-filterBadge: {
+  filterBadge: {
     position: 'absolute',
     top: -2,
     right: -2,
@@ -33,10 +32,10 @@ filterBadge: {
     position: 'absolute',
     right: 10,
     top: '50%',
-    transform: [{ translateY: -12 }],
+    transform: [{translateY: -12}],
   },
   filterIcon: {
     fontSize: 18,
     color: '#444',
   },
-})
+});

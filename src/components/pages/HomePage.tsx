@@ -11,41 +11,44 @@ import {
 } from 'react-native';
 import {BottomSheet} from '../organisms/BottomSheet/BottomSheet';
 import {SearchBar} from '../molecules/searchBar/searchBar';
-import { LinkButton } from '../molecules/linkButton/linkButton';
+import {LinkButton} from '../molecules/linkButton/linkButton';
 import useProductService from '../../apı/ProductService';
 import ProductCard from '../organisms/ProductCard/ProductCard';
-import type { Product } from '../../apı/models/Products';
+import type {Product} from '../../apı/models/Products';
+import {useNavigation} from '@react-navigation/native';
+import type {RootStackParamList} from '../../navigation/type';
 
-
+/*const navigation =
+  useNavigation<NativeStackNavigationProp<RootStackParamList>>();*/
 const HomePage = () => {
-const [visible, setVisible] = useState(false);
-const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-const [isSearching, setIsSearching] = useState(false);
-const {  products,getProducts } = useProductService();
-
-
+  const [visible, setVisible] = useState(false);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const {products, getProducts} = useProductService();
 
   useEffect(() => {
-   
-  if (products) {
-    setFilteredProducts(products);
-  }
-  getProducts();
-}, [products]);
+    if (products) {
+      setFilteredProducts(products);
+    }
+  }, [products]);
 
+  useEffect(() => {
+    getProducts();
+  }, []);
 
- const handleFilterApply = (min: number | null, max: number | null) => {
- const filtered = products?.filter((product) => {
-      const price = product.price;
-      if (min !== null && max !== null) {
-        return price >= min && price <= max;
-      } else if (min !== null) {
-        return price >= min;
-      } else if (max !== null) {
-        return price <= max;
-      }
-      return true;
-    }) || []; // products undifined dönerse boş liste atasın diye yaptım 
+  const handleFilterApply = (min: number | null, max: number | null) => {
+    const filtered =
+      products?.filter(product => {
+        const price = product.price;
+        if (min !== null && max !== null) {
+          return price >= min && price <= max;
+        } else if (min !== null) {
+          return price >= min;
+        } else if (max !== null) {
+          return price <= max;
+        }
+        return true;
+      }) || []; // products undifined dönerse boş liste atasın diye yaptım
 
     setFilteredProducts(filtered);
   };
@@ -71,32 +74,43 @@ const {  products,getProducts } = useProductService();
 
       <View style={styles.divider} />
 
-      
-<SearchBar
-  onPress={() => setVisible(true)}
-  isFilterActive={filteredProducts.length !== products?.length}
-/>
-     
-      {<FlatList
-  data={filteredProducts.length > 0 || isSearching ? filteredProducts : products}
-  keyExtractor={(item) => item.id.toString()}
-  numColumns={2}
-  renderItem={({ item }) => (
-    <View style= {{ flex:1, margin: 6}}>
-      <ProductCard
-        title={item.title}
-        price={item.price.toString()}
-        image={item.images[0] }
+      <SearchBar
+        onPress={() => setVisible(true)}
+        isFilterActive={filteredProducts.length !== products?.length}
       />
-    </View>
-  )}
-  contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 4 }}
-  columnWrapperStyle={{ justifyContent: 'space-between' }}
-  showsVerticalScrollIndicator={false}
-/> }
-      <BottomSheet visibility={visible} title="Filtrele" 
-      onClose={() => setVisible(false)}
-      onFilterApply={handleFilterApply} />
+
+      {
+        <FlatList
+          data={
+            filteredProducts.length > 0 || isSearching
+              ? filteredProducts
+              : products
+          }
+          keyExtractor={item => item.id.toString()}
+          numColumns={2}
+          renderItem={({item}) => (
+            <View style={{flex: 1, margin: 6}}>
+              <ProductCard
+                title={item.title}
+                price={item.price.toString()}
+                image={item.images[0]}
+                /*onPress={() =>
+                  navigation.navigate('ProductDetailPage', {product: item})
+                }*/
+              />
+            </View>
+          )}
+          contentContainerStyle={{paddingBottom: 20, paddingHorizontal: 4}}
+          columnWrapperStyle={{justifyContent: 'space-between'}}
+          showsVerticalScrollIndicator={false}
+        />
+      }
+      <BottomSheet
+        visibility={visible}
+        title="Filtrele"
+        onClose={() => setVisible(false)}
+        onFilterApply={handleFilterApply}
+      />
     </View>
   );
 };
@@ -130,8 +144,8 @@ const styles = StyleSheet.create({
   },
   cartWrapper: {
     flex: 1,
-  marginBottom: 16,
-  marginHorizontal: 4,
+    marginBottom: 16,
+    marginHorizontal: 4,
   },
   badge: {
     position: 'absolute',

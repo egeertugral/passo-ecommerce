@@ -1,6 +1,4 @@
-
-
 export type QuantityButtonProps = {
-    icon: '+' | '-';
-    onPress: () => void;
+  icon: '+' | '-';
+  onPress: () => void;
 };

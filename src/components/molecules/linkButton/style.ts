@@ -1,5 +1,3 @@
-import { StyleSheet } from "react-native";
+import {StyleSheet} from 'react-native';
 
-export const linkButtonStyle = StyleSheet.create({
-    
-})
+export const linkButtonStyle = StyleSheet.create({});
